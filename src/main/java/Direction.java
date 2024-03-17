@@ -1,12 +1,14 @@
 public enum Direction {
-    UP(new int[] {-1, 0}),
-    RIGHT(new int[] {0, 1}),
-    DOWN(new int[] {1, 0}),
-    LEFT(new int[] {0, -1});
+    UP(-1, 0),
+    RIGHT(0, 1),
+    DOWN(1, 0),
+    LEFT(0, -1);
 
-    public final int[] vector;
+    public final int x;
+    public final int y;
 
-    private Direction(int[] vector) {
-        this.vector = vector;
+    private Direction(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
 }

@@ -1,6 +1,8 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
@@ -11,7 +13,9 @@ public class Board {
 
         int j = 0;
 
-        for (int i = 0; i <= 2048; i++) {
+        list.add(Map.entry('0', 0));
+
+        for (int i = 1; i <= 2048; i *= 2) {
             if (i <= 8) {
                 list.add(Map.entry((char) (i + '0'), i));
             } else {
@@ -38,19 +42,25 @@ public class Board {
         this.board = new int[rows][cols];
     }
 
-    public Board(String text, String separator) {
-        this(text.split(separator).length, text.split(separator)[0].length());
+    public Board(String text) {
+        // TODO: upgrade to JDK22 to fix this
+        this(text.split(System.lineSeparator()).length, text.split(System.lineSeparator())[0].length());
 
-        String[] rows = text.split(separator);
+        String[] rows = text.split(System.lineSeparator());
 
         for (int i = 0; i < rows.length; i++) {
             for (int j = 0; j < rows[0].length(); j++) {
                 char c = rows[i].charAt(j);
 
                 if (!biMap.containsKey(c)) {
-                    throw new IllegalArgumentException("String contains invalid character: " + c);
+                    throw new IllegalArgumentException("String contains " +
+                            "invalid character: " + c);
                 }
-                board[i][j] = biMap.get(rows[i].charAt(j));
+
+                int val = biMap.get(rows[i].charAt(j));
+                if (val != 0) {
+                    addTile(val, i, j);
+                }
             }
         }
     }
@@ -87,6 +97,40 @@ public class Board {
         return true;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Board otherBoard = (Board) o;
+        return rows == otherBoard.rows
+                && cols == otherBoard.cols
+                && n == otherBoard.n
+                && Arrays.deepEquals(board, otherBoard.board);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(rows, cols, n);
+        result = 31 * result + Arrays.deepHashCode(board);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Tile count: ")
+          .append(n)
+          .append(System.lineSeparator());
+
+        for (int[] row : board) {
+            sb.append(Arrays.toString(row))
+              .append(System.lineSeparator());
+        }
+        return sb.toString();
+    }
+
     private void shiftRight() {
         for (int i = 0; i < rows; i++) {
             int rj = cols - 1;
@@ -109,7 +153,24 @@ public class Board {
     }
 
     private void shiftLeft() {
+        for (int i = 0; i < rows; i++) {
+            int lj = 0;
 
+            for (int j = 1; j < cols; j++) {
+                if (board[i][j] != 0) {
+                    if (board[i][lj] == 0) {
+                        board[i][lj] = board[i][j];
+                        board[i][j] = 0;
+                    } else if (board[i][lj] == board[i][j]) {
+                        mergeTiles(i, j, i, lj);
+                    } else if (lj + 1 != j){
+                        board[i][lj + 1] = board[i][j];
+                        board[i][j] = 0;
+                    }
+                    lj++;
+                }
+            }
+        }
     }
 
     private void shiftUp() {
@@ -118,6 +179,15 @@ public class Board {
 
     private void shiftDown() {
 
+    }
+
+    private void addTile(int val, int i, int j) {
+        assert val > 0;
+        assert !isFull();
+        assert board[i][j] == 0;
+
+        board[i][j] = val;
+        n++;
     }
 
     private void mergeTiles(int srcI, int srcJ, int dstI, int dstJ) {
