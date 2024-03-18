@@ -23,6 +23,8 @@ public class BoardTest {
     private Board board1;
     private Board board1RightShift;
     private Board board1LeftShift;
+    private Board board1UpShift;
+    private Board board1DownShift;
 
     @Before
     public void resetBoards() {
@@ -36,17 +38,37 @@ public class BoardTest {
         String board1LeftShiftText = readFile(new File("src/test/resources" +
                 "/test_board_1/test_board_1_left_shift.txt"));
         board1LeftShift = new Board(board1LeftShiftText);
+
+        String board1UpShiftText = readFile(new File("src/test/resources" +
+                "/test_board_1/test_board_1_up_shift.txt"));
+        board1UpShift = new Board(board1UpShiftText);
+
+        String board1DownShiftText = readFile(new File("src/test/resources" +
+                "/test_board_1/test_board_1_down_shift.txt"));
+        board1DownShift = new Board(board1DownShiftText);
     }
 
     @Test
     public void rightShiftWorks() {
         board1.shiftTiles(Direction.RIGHT);
-        Assert.assertEquals(board1, board1RightShift);
+        Assert.assertEquals(board1RightShift, board1);
     }
 
     @Test
     public void leftShiftWorks() {
         board1.shiftTiles(Direction.LEFT);
-        Assert.assertEquals(board1, board1LeftShift);
+        Assert.assertEquals(board1LeftShift, board1);
+    }
+
+    @Test
+    public void upShiftWorks() {
+        board1.shiftTiles(Direction.UP);
+        Assert.assertEquals(board1UpShift, board1);
+    }
+
+    @Test
+    public void downShiftWorks() {
+        board1.shiftTiles(Direction.DOWN);
+        Assert.assertEquals(board1DownShift, board1);
     }
 }

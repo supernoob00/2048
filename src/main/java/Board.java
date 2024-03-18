@@ -138,15 +138,14 @@ public class Board {
             for (int j = cols - 2; j >= 0; j--) {
                 if (board[i][j] != 0) {
                     if (board[i][rj] == 0) {
-                        board[i][rj] = board[i][j];
-                        board[i][j] = 0;
+                        moveTile(i, j, i, rj);
                     } else if (board[i][rj] == board[i][j]) {
                         mergeTiles(i, j, i, rj);
-                    } else if (rj - 1 != j){
-                        board[i][rj - 1] = board[i][j];
-                        board[i][j] = 0;
+                        rj--;
+                    } else {
+                        moveTile(i, j, i, rj - 1);
+                        rj--;
                     }
-                    rj--;
                 }
             }
         }
@@ -159,26 +158,65 @@ public class Board {
             for (int j = 1; j < cols; j++) {
                 if (board[i][j] != 0) {
                     if (board[i][lj] == 0) {
-                        board[i][lj] = board[i][j];
-                        board[i][j] = 0;
+                        moveTile(i, j, i, lj);
                     } else if (board[i][lj] == board[i][j]) {
                         mergeTiles(i, j, i, lj);
-                    } else if (lj + 1 != j){
-                        board[i][lj + 1] = board[i][j];
-                        board[i][j] = 0;
+                        lj++;
+                    } else {
+                        moveTile(i, j, i, lj + 1);
+                        lj++;
                     }
-                    lj++;
                 }
             }
         }
     }
 
     private void shiftUp() {
+        for (int j = 0; j < cols; j++) {
+            int ti = 0;
 
+            for (int i = 1; i < rows; i++) {
+                if (board[i][j] != 0) {
+                    if (board[ti][j] == 0) {
+                        moveTile(i, j, ti, j);
+                    } else if (board[ti][j] == board[i][j]) {
+                        mergeTiles(i, j, ti, j);
+                        ti++;
+                    } else {
+                        moveTile(i, j, ti + 1, j);
+                        ti++;
+                    }
+                }
+            }
+        }
     }
 
     private void shiftDown() {
+        for (int j = 0; j < cols; j++) {
+            int bi = rows - 1;
 
+            for (int i = rows  - 2; i >= 0; i--) {
+                if (board[i][j] != 0) {
+                    if (board[bi][j] == 0) {
+                        moveTile(i, j, bi, j);
+                    } else if (board[bi][j] == board[i][j]) {
+                        mergeTiles(i, j, bi, j);
+                        bi--;
+                    } else {
+                        moveTile(i, j, bi - 1, j);
+                        bi--;
+                    }
+                }
+            }
+        }
+    }
+
+    private void moveTile(int i1, int j1, int i2, int j2) {
+        assert board[i1][j1] != 0 || board[i2][j2] == 0;
+
+        int tmp = board[i1][j1];
+        board[i1][j1] = 0;
+        board[i2][j2] = tmp;
     }
 
     private void addTile(int val, int i, int j) {
