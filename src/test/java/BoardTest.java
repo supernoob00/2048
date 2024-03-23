@@ -71,4 +71,37 @@ public class BoardTest {
         board1.shiftTiles(Direction.DOWN);
         Assert.assertEquals(board1DownShift, board1);
     }
+
+    @Test
+    public void drawBoard() {
+        String expected = """
+                +---+---+---+---+
+                | 0 | 0 | 2 | 0 |
+                +---+---+---+---+
+                | 2 | 0 | 2 | 4 |
+                +---+---+---+---+
+                | 8 | 2 | 2 | 4 |
+                +---+---+---+---+
+                | 8 | 8 | 2 | 4 |
+                +---+---+---+---+
+                """;
+
+        String actual = Board.AsciiBoardDrawer.getAscii(board1);
+        Assert.assertEquals(expected, actual);
+
+        String expected2 = """
+                +----+----+----+----+
+                |  0 |  0 |  0 |  0 |
+                +----+----+----+----+
+                |  0 |  0 |  0 |  0 |
+                +----+----+----+----+
+                |  2 |  2 |  4 |  4 |
+                +----+----+----+----+
+                | 16 |  8 |  4 |  8 |
+                +----+----+----+----+
+                """;
+
+        String actual2 = Board.AsciiBoardDrawer.getAscii(board1DownShift);
+        Assert.assertEquals(expected2, actual2);
+    }
 }

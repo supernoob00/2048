@@ -97,6 +97,17 @@ public class Board {
         return true;
     }
 
+    public int maxValue() {
+        int max = 0;
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                max = Math.max(board[i][j], max);
+            }
+        }
+        return max;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -130,6 +141,55 @@ public class Board {
         }
         return sb.toString();
     }
+
+    public static class AsciiBoardDrawer {
+        public static String getAscii(Board b) {
+            StringBuilder sb = new StringBuilder();
+
+            int padding = 1;
+            int digitCount = String.valueOf(b.maxValue()).length();
+
+            int tileWidth = (1 + digitCount + 2 * padding);
+            int tileHeight = 2;
+
+            int width = b.cols * tileWidth + 1;
+            int height = b.rows * tileHeight + 1;
+
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    if (i % tileHeight == 0) {
+                        if (j % tileWidth == 0) {
+                            sb.append("+");
+                        } else {
+                            sb.append("-");
+                        }
+                    } else {
+                        if (j % tileWidth == 0) {
+                            sb.append("|");
+                        } else if ((j - 1) % tileWidth == 0) {
+                            int row = (i - 1) / tileHeight;
+                            int col = (j - 1) / tileWidth;
+
+                            sb.append(tileNumber(
+                                    b.board[row][col], digitCount, padding));
+                        }
+                    }
+                }
+                sb.append(System.lineSeparator());
+            }
+
+            return sb.toString();
+        }
+
+        private static String tileNumber(int n, int digitPlaces, int padding) {
+            int leftPad = digitPlaces - String.valueOf(n).length();
+
+            return " ".repeat(padding + leftPad) +
+                    n +
+                    " ".repeat(padding);
+        }
+    }
+
 
     private void shiftRight() {
         for (int i = 0; i < rows; i++) {
